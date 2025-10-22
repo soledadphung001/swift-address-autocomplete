@@ -1,0 +1,194 @@
+{% assign icon_color = block.settings.icon_color %}
+{% assign wishlist_text = block.settings.wishlist_text %}
+{% assign product_type = block.settings.product_type %}
+{% assign app_url = shop.metafields.custom.app_url.value %}
+
+<div class="wishlist-icon-container" data-product-type="{{ product_type }}" data-app-url="{{ app_url }}">
+  <button
+    class="wishlist-button"
+    aria-label="Add to wishlist"
+    x-data="wishlist"
+    x-on:click="toggleWishlist($event)"
+    x-bind:class="{ 'active': wishlist }"
+  >
+    <svg class="wishlist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+    </svg>
+    {% if wishlist_text != blank %}
+      <span class="wishlist-text">{{ wishlist_text }}</span>
+    {% endif %}
+  </button>
+</div>
+
+<style>
+  .wishlist-icon-container {
+    display: inline-block;
+  }
+
+  .wishlist-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+    color: {{ icon_color }};
+  }
+
+  .wishlist-button:hover {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+
+  .wishlist-button:active {
+    transform: scale(0.95);
+  }
+
+  .wishlist-icon {
+    width: 24px;
+    height: 24px;
+    stroke: {{ icon_color }};
+    transition: all 0.3s ease;
+  }
+
+  .wishlist-button.active .wishlist-icon {
+    fill: {{ icon_color }};
+    stroke: {{ icon_color }};
+  }
+
+  .wishlist-text {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) {
+    .wishlist-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .wishlist-text {
+      display: none;
+    }
+  }
+</style>
+
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<script>
+
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('wishlist', () => ({
+      wishlist: false,
+      appUrl: '{{ app_url }}',
+      async init() {
+        const productId = {{ product.id | json }};
+        const customerId = {{ customer.id | json }};
+        const shop = {{ shop.permanent_domain | json }};
+        if (!customerId) return;
+
+        const res = await fetch(`${this.appUrl}/api/wishlist?customerId=${encodeURIComponent(customerId)}&productId=${encodeURIComponent(productId)}&shop=${encodeURIComponent(shop)}`);
+        const data = await res.json();
+        if (data.ok && data.exists) this.wishlist = true;
+      },
+      async toggleWishlist(e) {
+        e.preventDefault();
+        const productId = {{ product.id | json }};
+        const customerId = {{ customer.id | json }};
+        const shop = {{ shop.permanent_domain | json }};
+
+        const formData = new FormData();
+        formData.append('productId', productId);
+        formData.append('customerId', customerId);
+        formData.append('shop', shop);
+        formData.append('_action', this.wishlist ? 'remove' : 'add');
+
+        try {
+          const res = await fetch(`${this.appUrl}/api/wishlist`, {
+            method: 'POST',
+            body: formData,
+            redirect: 'follow'
+          });
+          const data = await res.json();
+          if (data.ok) {
+            this.wishlist = !this.wishlist;
+          } else {
+            alert(data.message);
+          }
+        } catch (err) {
+          console.error('Wishlist error:', err);
+        }
+      },
+    }));
+  });
+
+//   document.addEventListener('DOMContentLoaded', function() {
+//     const wishlistButtons = document.querySelectorAll('.wishlist-button');
+    
+//     wishlistButtons.forEach(button => {
+//       button.addEventListener('click', async function(e) {
+//         e.preventDefault();
+//         const shop = {{ shop.permanent_domain | json }};
+//         // Optional: Add to wishlist logic here
+//         const container = this.closest('.wishlist-icon-container');
+//         const productId = {{ product.id | json }};
+//         const appUrl = {{ app_url | json }};
+//         {% unless customer %}
+//           alert('Please login to add to wishlist');
+//           return;
+//         {% endunless %}
+
+//         var formData = new FormData();
+//         formData.append('productId', productId);
+//         formData.append('shop', shop);
+//         formData.append('customerId', {{ customer.id }});
+//         const response = await fetch(`${appUrl}/api/wishlist`, {
+//           method: 'POST',
+//           body: formData,
+//         });
+//         const data = await response.json();
+
+//         if (data.ok) {
+//           button.classList.toggle('active');
+//           console.log('Wishlist toggled for product type:', productId);
+//         } else {
+//           alert(data.message);
+//         }
+
+//       });
+//     });
+//   });
+</script>
+
+{% schema %}
+{
+  "name": "Wishlist Icon",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "wishlist_text",
+      "label": "Wishlist Text",
+      "default": "Add to Wishlist",
+      "placeholder": "Enter text or leave empty"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon Color",
+      "default": "#000000"
+    },
+    {
+      "type": "text",
+      "id": "product_type",
+      "label": "Product Type",
+      "default": "product",
+      "placeholder": "e.g., product, variant, collection"
+    }
+  ]
+}
+{% endschema %}
