@@ -1,5 +1,5 @@
 {
-  "name": "wistlist-app-new",
+  "name": "swift-address-autocomplete",
   "private": true,
   "scripts": {
     "build": "remix vite:build",

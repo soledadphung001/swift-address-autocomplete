@@ -44,3 +44,31 @@ model Wishlist {
   shop String
   createdAt DateTime @default(now())
 }
+
+model AddressLookup {
+  id Int @id @default(autoincrement())
+  shop String
+  customerId String?
+  sessionId String?
+  query String
+  resultCount Int @default(0)
+  charged Boolean @default(false)
+  chargeAmount Float @default(0.03)
+  createdAt DateTime @default(now())
+  
+  @@index([shop, createdAt])
+  @@index([charged])
+}
+
+model SwiftcompleteSettings {
+  id Int @id @default(autoincrement())
+  shop String @unique
+  apiKey String
+  enabled Boolean @default(true)
+  enabledCheckout Boolean @default(true)
+  enabledProfile Boolean @default(true)
+  chargePerLookup Float @default(0.03)
+  maxMonthlyCharge Float @default(100.00)
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}

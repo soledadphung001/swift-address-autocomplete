@@ -1,0 +1,11 @@
+{
+  "name": "Swift Address Autocomplete",
+  "description": "Intelligent address autocomplete powered by Swiftcomplete API for customer account pages",
+  "settings": {
+    "enabled": {
+      "label": "Enable address autocomplete",
+      "info": "Shows address suggestions as customers type"
+    }
+  }
+}
+

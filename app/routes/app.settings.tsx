@@ -14,8 +14,6 @@ import prisma from "../db.server";
 
 export async function loader() {
   const settings = await prisma.settings.findFirst();
-  console.log('settings ... .....  ....', settings);
-
   return { settings };
 }
 
@@ -25,9 +23,9 @@ export async function action({ request }: ActionFunctionArgs) {
   const appDescription = formData.get("appDescription") as string;
 
   await prisma.settings.upsert({
-    where: { id: "1" },
+    where: { id: 1 },
     update: { appName, appDescription },
-    create: { id: "1", appName, appDescription: appDescription ?? "" },
+    create: { id: 1, appName, appDescription: appDescription ?? "" },
   });
 
   return { ok: true, message: "Settings updated successfully" };
