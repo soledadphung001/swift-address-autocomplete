@@ -12,7 +12,8 @@
     apiEndpoint: '/apps/address-autocomplete/search',
     enabled: true,
     minCharacters: 3,
-    debounceDelay: 300
+    debounceDelay: 300,
+    context: 'profile' // Explicitly set context for profile pages
   };
 
   // Store active autocomplete instances
@@ -278,7 +279,7 @@
       showLoading(instance.dropdown);
       
       // Call backend API (which proxies to Swiftcomplete)
-      const response = await fetch(`${config.apiEndpoint}&q=${encodeURIComponent(query)}`);
+      const response = await fetch(`${config.apiEndpoint}&q=${encodeURIComponent(query)}&context=${config.context}`);
       
       if (!response.ok) {
         throw new Error('API request failed');

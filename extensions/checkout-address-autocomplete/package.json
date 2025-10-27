@@ -1,0 +1,19 @@
+{
+  "name": "checkout-address-autocomplete",
+  "version": "1.0.0",
+  "description": "Address Autocomplete for Shopify Checkout",
+  "type": "module",
+  "scripts": {
+    "build": "node ../../scripts/gen-env.cjs && node -e \"console.log('Build complete')\""
+  },
+  "dependencies": {
+    "@shopify/ui-extensions": "2024.1.2",
+    "@shopify/ui-extensions-react": "2024.1.2",
+    "react": "18.3.1",
+    "react-reconciler": "0.29.2"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  },
+  "devDependencies": {}
+}

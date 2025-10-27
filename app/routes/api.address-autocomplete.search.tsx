@@ -19,6 +19,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const query = url.searchParams.get("q");
   const shop = url.searchParams.get("shop");
+  const context = url.searchParams.get("context") || detectContext(request); // 'checkout' or 'profile'
 
   if (!shop) {
     return json({ results: [], error: "Shop parameter required" }, { status: 400, headers: corsHeaders });
@@ -36,6 +37,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     if (!settings || !settings.enabled) {
       return json({ results: [], error: "Service not enabled" }, { status: 403, headers: corsHeaders });
+    }
+
+    // Check context-specific settings
+    if (context === 'checkout' && !settings.enabledCheckout) {
+      return json({ results: [], error: "Service not enabled for checkout" }, { status: 403, headers: corsHeaders });
+    }
+
+    if (context === 'profile' && !settings.enabledProfile) {
+      return json({ results: [], error: "Service not enabled for profile" }, { status: 403, headers: corsHeaders });
     }
 
     // Call Swiftcomplete API using their actual endpoint
@@ -139,6 +149,28 @@ export async function loader({ request }: LoaderFunctionArgs) {
       { status: 500, headers: corsHeaders }
     );
   }
+}
+
+/**
+ * Detect context from request headers
+ * Checkout requests typically have specific headers or referer patterns
+ */
+function detectContext(request: Request): 'checkout' | 'profile' | 'unknown' {
+  const referer = request.headers.get('referer') || '';
+  const userAgent = request.headers.get('user-agent') || '';
+  
+  // Check referer URL for checkout patterns
+  if (referer.includes('/checkout') || referer.includes('/cart/')) {
+    return 'checkout';
+  }
+  
+  // Check for account/profile patterns
+  if (referer.includes('/account') || referer.includes('/profile') || referer.includes('/address')) {
+    return 'profile';
+  }
+  
+  // Default to profile for unknown contexts (safer default)
+  return 'profile';
 }
 
 // For testing without authentication

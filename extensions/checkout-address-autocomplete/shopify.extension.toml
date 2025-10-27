@@ -1,0 +1,19 @@
+api_version = "2025-01"
+
+[[extensions]]
+
+uid = "08620049-03df-eeb2-d89d-400c0b9cc57e542b317e"
+
+type = "ui_extension"
+name = "Address Autocomplete"
+handle = "address-autocomplete-checkout"
+
+[[extensions.targeting]]
+target = "purchase.checkout.delivery-address.render-before"
+module = "./src/index.jsx"
+
+[extensions.capabilities]
+network_access = true
+
+[build]
+command = "node ../../scripts/gen-env.cjs"

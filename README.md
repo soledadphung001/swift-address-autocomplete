@@ -4,16 +4,32 @@ A Shopify app that provides intelligent address autocomplete functionality power
 
 ## 🎯 Features
 
+### Phase 1 (Profile Pages) ✅
 - ✅ **Address Autocomplete** - Real-time address suggestions as customers type
 - ✅ **Profile Page Support** - Works on customer account address forms (including popups)
+- ✅ **Theme App Extension** - Easy merchant setup via theme editor
+- ✅ **Auto-fill Forms** - Automatically populates address, city, state, zip, country fields
+
+### Phase 2 (Checkout Pages) ✅ NEW!
+- ✅ **Checkout Autocomplete** - Address suggestions during checkout
+- ✅ **2-Character Country Codes** - Handles checkout-specific country formats (US, CA, etc.)
+- ✅ **Independent Controls** - Separate enable/disable for checkout vs profile
+- ✅ **Uses Existing Fields** - Enhances native address1 field (no new fields!)
+- ✅ **Context-Aware API** - Respects per-page settings
+
+### Core Features
 - ✅ **Swiftcomplete Integration** - Powered by Swiftcomplete's global address database
 - ✅ **Usage Tracking** - Track every API call for billing ($0.03/lookup)
 - ✅ **Admin Dashboard** - Configure API keys, view usage statistics
-- ✅ **Theme App Extension** - Easy merchant setup via theme editor
-- ✅ **Auto-fill Forms** - Automatically populates address, city, state, zip, country fields
 - ✅ **Multi-country Support** - 40+ countries with ISO code to name mapping
 - ✅ **Mobile Responsive** - Works perfectly on all devices
 - ✅ **Dark Mode** - Adapts to user preferences
+
+## 📚 Documentation
+
+- **[Phase 2 Quick Start](./PHASE_2_QUICK_START.md)** - 5-minute setup guide for checkout
+- **[Phase 2 Full Implementation](./PHASE_2_CHECKOUT_IMPLEMENTATION.md)** - Complete guide with FAQs
+- **[Phase 2 Testing Checklist](./PHASE_2_TESTING_CHECKLIST.md)** - Comprehensive testing guide
 
 ## 📋 Tech Stack
 
@@ -310,7 +326,9 @@ This project is proprietary software for Swiftcomplete address autocomplete serv
 
 - **Documentation**: Check the docs folder
 - **Issues**: Open a GitHub issue
-- **Email**: your-support@email.com
+- **AUTHOR**: Phung Tran
+- **Linkedin**: https://www.linkedin.com/in/ph%E1%BB%A5ng-tr%E1%BA%A7n-7820a5b7/
+- **Email**: phungthaouit@gmail.com
 
 ## 🎯 Roadmap
 
