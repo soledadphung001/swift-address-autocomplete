@@ -257,7 +257,7 @@ export default function Index() {
                   padding="0"
                 >
                   <img
-                    src="https://i.ibb.co/nsL9xGc/checkout-screenshot.png"
+                    src="/checkout-screenshot.png"
                     alt="Address Autocomplete in Checkout"
                     style={{
                       width: "100%",
