@@ -1,68 +1,48 @@
-# Swift Address Autocomplete
+# Swift Address Autocomplete (Checkout UI Extension)
 
-A Shopify app that provides intelligent address autocomplete functionality powered by the Swiftcomplete API. Monetize address lookups at $0.03 per API call with built-in usage tracking and billing.
+A Shopify app that adds intelligent address autocomplete to Checkout using a Checkout UI Extension and a secure backend proxy to Swiftcomplete API.
 
-## 🎯 Features
+## 🎯 What's Included
 
-### Phase 1 (Profile Pages) ✅
-- ✅ **Address Autocomplete** - Real-time address suggestions as customers type
-- ✅ **Profile Page Support** - Works on customer account address forms (including popups)
-- ✅ **Theme App Extension** - Easy merchant setup via theme editor
-- ✅ **Auto-fill Forms** - Automatically populates address, city, state, zip, country fields
+- ✅ **Checkout UI Extension** - Real-time address suggestions during checkout
+- ✅ **Admin Settings Page** - Configure Swiftcomplete API key, enable/disable checkout feature
+- ✅ **Secure Backend Proxy** - Your Swiftcomplete API key is never exposed to the frontend
+- ✅ **Automatic URL Injection** - No hardcoded URLs; works for every developer automatically
+- ✅ **Usage Tracking** - Track every API call for billing purposes
+- ✅ **Debounced Search** - Optimized API calls with 300ms debounce
+- ✅ **Keyboard Navigation** - Arrow keys, Enter, Escape support
+- ✅ **Multi-country Support** - 40+ countries supported
 
-### Phase 2 (Checkout Pages) ✅ NEW!
-- ✅ **Checkout Autocomplete** - Address suggestions during checkout
-- ✅ **2-Character Country Codes** - Handles checkout-specific country formats (US, CA, etc.)
-- ✅ **Independent Controls** - Separate enable/disable for checkout vs profile
-- ✅ **Uses Existing Fields** - Enhances native address1 field (no new fields!)
-- ✅ **Context-Aware API** - Respects per-page settings
+## 🧰 Tech Stack
 
-### Core Features
-- ✅ **Swiftcomplete Integration** - Powered by Swiftcomplete's global address database
-- ✅ **Usage Tracking** - Track every API call for billing ($0.03/lookup)
-- ✅ **Admin Dashboard** - Configure API keys, view usage statistics
-- ✅ **Multi-country Support** - 40+ countries with ISO code to name mapping
-- ✅ **Mobile Responsive** - Works perfectly on all devices
-- ✅ **Dark Mode** - Adapts to user preferences
-
-## 📚 Documentation
-
-- **[Phase 2 Quick Start](./PHASE_2_QUICK_START.md)** - 5-minute setup guide for checkout
-- **[Phase 2 Full Implementation](./PHASE_2_CHECKOUT_IMPLEMENTATION.md)** - Complete guide with FAQs
-- **[Phase 2 Testing Checklist](./PHASE_2_TESTING_CHECKLIST.md)** - Comprehensive testing guide
-
-## 📋 Tech Stack
-
-- **Backend**: Remix (React framework)
-- **Database**: Prisma with SQLite (dev) / PostgreSQL (production ready)
-- **UI**: Shopify Polaris components
-- **Frontend**: Vanilla JavaScript for theme extension
+- **Backend**: Remix (Node.js + Express)
+- **Database**: Prisma ORM + SQLite (dev) / PostgreSQL (production-ready)
+- **Admin UI**: Shopify Polaris components
+- **Extension**: @shopify/ui-extensions-react
 - **API**: Swiftcomplete REST API
-- **Styling**: CSS with modern design
 
 ## 🏗️ Architecture
 
 ```
 ┌─────────────────────────────────┐
-│  Shopify Storefront             │
-│  - Customer Account Pages       │
-│  - Address Forms (Popups)       │
+│  Shopify Checkout Page          │
+│  - Delivery Address Form        │
 └────────────┬────────────────────┘
              │
              ↓
 ┌─────────────────────────────────┐
-│  Theme App Extension            │
-│  - MutationObserver for popups  │
+│  Checkout UI Extension          │
+│  - React component              │
+│  - Debounced input handler      │
 │  - Autocomplete dropdown        │
-│  - Form auto-fill logic         │
 └────────────┬────────────────────┘
              │
              ↓
 ┌─────────────────────────────────┐
 │  Remix Backend API              │
-│  - Proxy to Swiftcomplete       │
-│  - Usage tracking & billing     │
-│  - Settings management          │
+│  - /api/address-autocomplete    │
+│  - Settings validation          │
+│  - Usage tracking               │
 └────────────┬────────────────────┘
              │
              ↓
@@ -73,55 +53,121 @@ A Shopify app that provides intelligent address autocomplete functionality power
 └─────────────────────────────────┘
 ```
 
-## 🚀 Quick Start
+## 🚀 Setup & Installation
 
 ### Prerequisites
 
-- Node.js 18.20+ or 20.10+ or 21+
-- Shopify Partner account
-- Shopify development store
-- Swiftcomplete API key
+- **Node.js**: 18.20+ or 20.10+ or 21+
+- **Shopify Partner Account**: [Create one here](https://partners.shopify.com/)
+- **Shopify Development Store**: Create from Partner Dashboard
+- **Swiftcomplete API Key**: Get from [Swiftcomplete](https://swiftcomplete.com/)
 
-### Installation
+### Step-by-Step Setup
 
-1. **Clone the repository**
+#### 1. Clone and Install
+
+```bash
+# Clone the repository
+git clone <your-repo-url>
+cd swift-address-autocomplete
+
+# Install dependencies
+npm install
+```
+
+#### 2. Database Setup
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run database migrations
+npx prisma migrate dev
+```
+
+This creates a SQLite database at `prisma/dev.sqlite` with the following tables:
+- `Session` - Shopify app session storage
+- `SwiftcompleteSettings` - API key and feature toggles
+- `AddressLookup` - Usage tracking
+
+#### 3. Start Development Server
+
+```bash
+npm run dev
+```
+
+**What happens:**
+- Shopify CLI starts a Cloudflare tunnel (e.g., `https://xxx.trycloudflare.com`)
+- Sets `SHOPIFY_APP_URL` environment variable automatically
+- Runs `scripts/gen-env.cjs` to inject the app URL into `extensions/checkout-address-autocomplete/src/app-origin.js`
+- Opens the Dev Console in your browser
+
+#### 4. Connect to Your Store
+
+When you run `npm run dev` for the first time:
+
+1. **CLI prompts you to select/create a store**
+   - Choose your development store
+   - CLI creates the app in your Partner Dashboard automatically
+
+2. **Install the app on your store**
+   - Click the installation link in the CLI output
+   - Approve the app permissions
+   - The app is now installed!
+
+#### 5. Configure Swiftcomplete API Key
+
+1. In your store admin, open the app
+2. Click **"Address Autocomplete"** in the app navigation
+3. Enter your **Swiftcomplete API key**
+4. Toggle **"Enable Checkout pages"** ON
+5. Click **Save**
+
+#### 6. Preview the Checkout Extension
+
+**Option A: Via Dev Console (default)**
+1. The CLI opens the Dev Console: `https://xxx.trycloudflare.com/extensions/dev-console`
+2. Find **"address-autocomplete-checkout"** in the extension list
+3. Click the **Preview** link
+4. Bookmark this URL for direct access next time
+
+**Option B: Direct Preview Link**
+- Copy the preview URL from the Dev Console
+- Format: `https://admin.shopify.com/store/<your-store>/checkouts/editor/extensions/<extension-id>`
+- Bookmark and open directly
+
+## 🧩 How Automatic URL Injection Works
+
+**Problem:** The extension needs the app's HTTPS URL, which changes for every developer and environment.
+
+**Solution:** Build-time injection via `gen-env.cjs`
+
+1. **Shopify CLI sets `SHOPIFY_APP_URL`**
    ```bash
-   git clone <your-repo-url>
-   cd swift-address-autocomplete
+   # Example during npm run dev
+   SHOPIFY_APP_URL=https://abc-xyz.trycloudflare.com
    ```
 
-2. **Install dependencies**
-   ```bash
-   npm install --legacy-peer-deps
+2. **Build script generates `app-origin.js`**
+   ```javascript
+   // scripts/gen-env.cjs runs before extension build
+   const fs = require('fs');
+   const appUrl = process.env.SHOPIFY_APP_URL || 'https://fallback.com';
+   fs.writeFileSync(
+     'extensions/checkout-address-autocomplete/src/app-origin.js',
+     `export const APP_ORIGIN = '${appUrl}';`
+   );
    ```
 
-3. **Run database migrations**
-   ```bash
-   npx prisma generate
-   npx prisma migrate dev
+3. **Extension imports APP_ORIGIN**
+   ```javascript
+   // extensions/checkout-address-autocomplete/src/index.jsx
+   import { APP_ORIGIN } from './app-origin';
+   
+   const apiEndpoint = `${APP_ORIGIN}/api/address-autocomplete/search`;
    ```
 
-4. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-5. **Configure the app**
-   - Open the app in Shopify admin
-   - Go to "Address Autocomplete" settings
-   - Enter your Swiftcomplete API key
-   - Save settings
-
-6. **Deploy extension**
-   ```bash
-   npm run deploy
-   ```
-
-7. **Enable in theme**
-   - Go to Online Store → Themes → Customize
-   - Click "App Embeds" (bottom left)
-   - Enable "Swift Address Autocomplete"
-   - Save theme
+**Result:** No hardcoding! Works for any developer, any environment, zero manual config.
 
 ## 📁 Project Structure
 
@@ -129,172 +175,170 @@ A Shopify app that provides intelligent address autocomplete functionality power
 swift-address-autocomplete/
 ├── app/
 │   ├── routes/
-│   │   ├── app.address-autocomplete.tsx    # Admin settings page
-│   │   ├── api.address-autocomplete.search.tsx  # API proxy
+│   │   ├── app.address-autocomplete.tsx          # Admin settings page
+│   │   ├── api.address-autocomplete.search.tsx   # Secure API proxy
+│   │   ├── app._index.tsx                        # Dashboard
 │   │   └── ...
-│   ├── db.server.ts                         # Prisma client
-│   └── shopify.server.ts                    # Shopify auth
+│   ├── db.server.ts                               # Prisma client
+│   └── shopify.server.ts                          # Shopify authentication
+│
 ├── extensions/
-│   └── address-autocomplete/
-│       ├── assets/
-│       │   ├── address-autocomplete.js      # Main logic (MutationObserver)
-│       │   └── address-autocomplete.css     # Dropdown styling
-│       ├── blocks/
-│       │   └── app-embed.liquid             # App embed block
-│       └── locales/
-│           └── en.default.json              # Translations
+│   └── checkout-address-autocomplete/
+│       ├── shopify.extension.toml                 # Extension config
+│       ├── package.json                           # Extension dependencies
+│       └── src/
+│           ├── index.jsx                          # Main React component
+│           └── app-origin.js                      # Generated (by gen-env.cjs)
+│
+├── scripts/
+│   └── gen-env.cjs                                # Injects SHOPIFY_APP_URL
+│
 ├── prisma/
-│   ├── schema.prisma                        # Database schema
-│   └── migrations/                          # Database migrations
-├── IMPLEMENTATION_SUMMARY.md                # Technical overview
-├── TESTING_GUIDE.md                         # How to test
-└── ADDRESS_AUTOCOMPLETE_README.md           # Detailed docs
+│   ├── schema.prisma                              # Database schema
+│   ├── dev.sqlite                                 # SQLite database (dev)
+│   └── migrations/                                # Database migrations
+│
+├── package.json                                   # Root dependencies & scripts
+├── shopify.app.toml                               # Main app config
+└── TESTING_GUIDE_CHECKOUT.md                      # Testing guide
 ```
 
-## 🔧 Key Components
+## 🔒 Backend API Route
 
-### 1. Admin Settings (`app/routes/app.address-autocomplete.tsx`)
+**File:** `app/routes/api.address-autocomplete.search.tsx`
 
-**Built with**: Shopify Polaris + App Bridge + Remix
+**Flow:**
+1. Receives `?shop=...&q=...&context=checkout` from extension
+2. Fetches `SwiftcompleteSettings` from database for the shop
+3. Validates:
+   - `enabled` is true
+   - `enabledCheckout` is true (for checkout context)
+   - API key exists
+4. Calls Swiftcomplete API with the query
+5. Tracks usage in `AddressLookup` table
+6. Returns formatted results with CORS headers
 
-```typescript
-// Features:
-- Swiftcomplete API key configuration
-- Enable/disable per location (checkout, profile)
-- Usage statistics (last 30 days)
-- Pricing configuration ($0.03/lookup)
-- Installation instructions
-```
-
-**Technologies**: React, TypeScript, Polaris components, Remix actions/loaders
-
-### 2. API Proxy (`app/routes/api.address-autocomplete.search.tsx`)
-
-**Purpose**: Secure proxy between storefront and Swiftcomplete
-
-```typescript
-// Flow:
-1. Receives query from storefront
-2. Fetches API key from database
-3. Calls Swiftcomplete API
-4. Tracks usage in AddressLookup table
-5. Returns formatted results
-
-// Security:
-- API key never exposed to frontend
-- CORS headers for public access
-- Usage tracking for billing
-```
-
-### 3. Theme Extension (`extensions/address-autocomplete/`)
-
-**JavaScript Features**:
-- **MutationObserver**: Detects dynamic popups
-- **Debounced search**: Optimized API calls
-- **Keyboard navigation**: Arrow keys, Enter, Escape
-- **Form auto-fill**: Smart field detection
-- **Country mapping**: ISO codes to full names
-
-**CSS Features**:
-- Modern dropdown design
-- Mobile responsive
-- Dark mode support
-- Smooth animations
-
-### 4. Database Schema (`prisma/schema.prisma`)
-
-```prisma
-// SwiftcompleteSettings
-- shop, apiKey, enabled
-- enabledCheckout, enabledProfile
-- chargePerLookup, maxMonthlyCharge
-
-// AddressLookup (Usage Tracking)
-- shop, customerId, query
-- resultCount, charged, chargeAmount
-- createdAt
-```
-
-## 🎨 Shopify CLI Workflow
-
-### Scaffold New Features
-
-```bash
-# Generate new extension
-shopify app generate extension
-
-# Generate GraphQL types
-npm run graphql-codegen
-```
-
-### Preview & Development
-
-```bash
-# Start dev server with hot reload
-npm run dev
-
-# Preview in browser
-# Opens: https://admin.shopify.com/store/YOUR_STORE/apps/swift-address-autocomplete
-```
-
-### Deploy
-
-```bash
-# Deploy extension to production
-npm run deploy
-
-# Build for production
-npm run build
-```
-
-## 💰 Monetization Model
-
-- **$0.03 per address lookup**
-- Usage tracked in `AddressLookup` table
-- Ready for Shopify Billing API integration
-- Capped monthly charges configurable
-
-### Implementation (Future):
-
-```typescript
-// Add Shopify Billing API
-import { billing } from "@shopify/shopify-app-remix";
-
-// Create usage charge
-await billing.request({
-  plan: "usage",
-  amount: 0.03,
-  terms: "Address lookup"
-});
-```
+**Security:**
+- API key stored securely in database
+- Never exposed to frontend
+- CORS enabled for `extensions.shopifycdn.com` (extension sandbox)
 
 ## 🧪 Testing
 
-See [TESTING_GUIDE.md](./TESTING_GUIDE.md) for comprehensive testing instructions.
+See **[TESTING_GUIDE_CHECKOUT.md](./TESTING_GUIDE_CHECKOUT.md)** for comprehensive testing scenarios.
 
-**Quick Test**:
-1. Go to storefront as logged-in customer
-2. Navigate to Account → Addresses
-3. Click "Add new address"
-4. Type in address field
-5. See autocomplete dropdown
-6. Select address → form auto-fills
+### Quick Smoke Test
 
-## 📚 Documentation
+1. **Start dev server**
+   ```bash
+   npm run dev
+   ```
 
-- **[IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md)** - Complete overview
-- **[TESTING_GUIDE.md](./TESTING_GUIDE.md)** - Step-by-step testing
-- **[ADDRESS_AUTOCOMPLETE_README.md](./ADDRESS_AUTOCOMPLETE_README.md)** - Technical details
-- **[CHANGELOG.md](./CHANGELOG.md)** - Version history
+2. **Open checkout preview**
+   - Click the "address-autocomplete-checkout" preview link
 
-## 🔐 Security
+3. **Test autocomplete**
+   - Type "123 Main" in the address field
+   - See dropdown with suggestions
+   - Select a suggestion
+   - Verify the input updates
 
-- ✅ API keys stored securely in database
-- ✅ Backend proxy pattern (key never exposed to frontend)
-- ✅ HTTPS for all API calls
-- ✅ XSS protection with HTML escaping
-- ✅ CORS headers for controlled access
-- ✅ Usage tracking for abuse prevention
+4. **Check console logs**
+   - Open browser DevTools → Console
+   - Look for `[Demo]` prefixed logs showing:
+     - Extension initialization
+     - API calls
+     - Search results
+
+## 📦 Deployment
+
+### Deploy Extension
+
+```bash
+npm run deploy
+```
+
+This deploys the extension to Shopify. After deployment:
+
+1. **Enable in Checkout Editor**
+   - Go to **Settings → Checkout** in Shopify Admin
+   - Click **Customize**
+   - Add the "Address Autocomplete" extension
+   - Save
+
+2. **Test on live checkout**
+   - Create a test order in your store
+   - Proceed to checkout
+   - Test the autocomplete feature
+
+### Deploy Backend
+
+The Remix backend can be deployed to:
+- **Shopify-hosted** (via CLI: `shopify app deploy`)
+- **Custom hosting** (Render, Railway, Fly.io, etc.)
+
+## 🎨 Key Components
+
+### 1. Admin Settings Page
+
+**File:** `app/routes/app.address-autocomplete.tsx`
+
+**Features:**
+- Swiftcomplete API key input (masked)
+- Enable/disable toggles (Checkout, Profile)
+- Usage statistics (last 30 days)
+- Pricing info ($0.03/lookup)
+- Installation instructions
+
+**Technologies:** React, TypeScript, Polaris, Remix loaders/actions
+
+### 2. Checkout UI Extension
+
+**File:** `extensions/checkout-address-autocomplete/src/index.jsx`
+
+**Features:**
+- React component using `@shopify/ui-extensions-react`
+- Renders before native delivery address form
+- Debounced input (300ms)
+- Dropdown with keyboard navigation
+- Auto-focus on first result
+- Mock data fallback for demo
+
+**Key Hooks:**
+- `useApi()` - Access shop domain
+- `useState()` - Manage query, results, loading
+- `useEffect()` - Debounced search
+- `useCallback()` - Memoized handlers
+
+### 3. Database Schema
+
+**File:** `prisma/schema.prisma`
+
+```prisma
+model SwiftcompleteSettings {
+  id               String   @id @default(cuid())
+  shop             String   @unique
+  apiKey           String?
+  enabled          Boolean  @default(true)
+  enabledCheckout  Boolean  @default(false)
+  enabledProfile   Boolean  @default(false)
+  chargePerLookup  Float    @default(0.03)
+  maxMonthlyCharge Float    @default(100.0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model AddressLookup {
+  id           String   @id @default(cuid())
+  shop         String
+  customerId   String?
+  query        String
+  resultCount  Int      @default(0)
+  charged      Boolean  @default(false)
+  chargeAmount Float    @default(0.0)
+  createdAt    DateTime @default(now())
+}
+```
 
 ## 🌍 Supported Countries
 
@@ -306,39 +350,64 @@ See [TESTING_GUIDE.md](./TESTING_GUIDE.md) for comprehensive testing instruction
 - 🇸🇬 Singapore
 - 🇩🇪 Germany
 - 🇫🇷 France
+- 🇯🇵 Japan
 - And many more...
 
-See `countryCodeToName` mapping in `address-autocomplete.js`
+## 💡 Take-Home Assignment Notes
 
-## 🤝 Contributing
+This implementation demonstrates:
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+✅ **Checkout UI Extension Target**
+- Correct extension point: `purchase.checkout.delivery-address.render-before`
+- Proper TOML configuration with `targeting` array
+
+✅ **Component Rendering**
+- React component with Shopify UI Extensions hooks
+- TextField with debounced input
+- Pressable list items for suggestions
+- Loading and empty states
+
+✅ **API Integration**
+- Secure backend proxy to Swiftcomplete
+- HTTPS URLs automatically injected
+- CORS-friendly from extension sandbox
+
+✅ **Reactive UI**
+- Real-time search as user types
+- Keyboard navigation (arrows, Enter, Escape)
+- Selection updates input field
+- Console logging for demo visibility
+
+✅ **Production-Ready Patterns**
+- No hardcoded URLs
+- Settings validation
+- Usage tracking
+- Error handling with fallbacks
+
+## 🔐 Security Best Practices
+
+- ✅ API keys stored in database (never in code)
+- ✅ Backend proxy pattern (key never sent to frontend)
+- ✅ HTTPS enforced for all requests
+- ✅ CORS headers properly configured
+- ✅ Input validation on API routes
+- ✅ Usage tracking for abuse prevention
 
 ## 📝 License
 
 This project is proprietary software for Swiftcomplete address autocomplete services.
 
-## 🆘 Support
+## 🆘 Support & Contact
 
-- **Documentation**: Check the docs folder
-- **Issues**: Open a GitHub issue
-- **AUTHOR**: Phung Tran
-- **Linkedin**: https://www.linkedin.com/in/ph%E1%BB%A5ng-tr%E1%BA%A7n-7820a5b7/
+- **Author**: Phung Tran
+- **LinkedIn**: [Phụng Trần](https://www.linkedin.com/in/ph%E1%BB%A5ng-tr%E1%BA%A7n-7820a5b7/)
 - **Email**: phungthaouit@gmail.com
+- **Documentation**: See `TESTING_GUIDE_CHECKOUT.md`
 
-## 🎯 Roadmap
+## 📚 Additional Resources
 
-- [ ] Checkout UI Extension (for checkout pages)
-- [ ] Shopify Billing API integration
-- [ ] Address validation (not just autocomplete)
-- [ ] Analytics dashboard
-- [ ] Multi-language support
-- [ ] Custom address formats per country
+- [Shopify Checkout UI Extensions Docs](https://shopify.dev/docs/api/checkout-ui-extensions)
+- [Swiftcomplete API Docs](https://swiftcomplete.com/docs)
+- [Remix Framework Docs](https://remix.run/docs)
+- [Prisma ORM Docs](https://www.prisma.io/docs)
 
----
-
-**Built with ❤️ for Shopify merchants**

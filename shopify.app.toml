@@ -25,8 +25,3 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [ "https://example.com/api/auth" ]
-
-[app_proxy]
-url = "https://patricia-reproduced-bird-citizenship.trycloudflare.com"
-prefix = "apps"
-subpath = "address-autocomplete"

@@ -175,7 +175,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Index() {
   const fetcher = useFetcher<typeof action>();
-  const { wishlists } = useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<typeof loader>();
 
   const shopify = useAppBridge();
   const isLoading =
@@ -193,40 +193,156 @@ export default function Index() {
   }, [productId, shopify]);
   const generateProduct = () => fetcher.submit({}, { method: "POST" });
 
-  const rows = (wishlists ?? []).map((w: { productId: string; customerId: string; createdAt: Date }) => [w.productId, w.customerId, new Date(w.createdAt).toLocaleString()]);
-
   return (
     <Page>
-      <TitleBar title="Remix app template">
-        <button variant="primary" onClick={generateProduct}>
-          Generate a product
-        </button>
-      </TitleBar>
+      <TitleBar title="Swift Address Autocomplete" />
       <BlockStack gap="500">
         <Layout>
+          {/* Hero Section */}
           <Layout.Section>
             <Card>
+              <BlockStack gap="400">
                 <BlockStack gap="200">
-                  <Text as="h3" variant="headingMd">Wishlist</Text>
-                    <DataTable
-                      columnContentTypes={["text", "text", "datetime"] as const}
-                        headings={["Product ID", "Customer ID", "Created At"]}
-                        rows={rows}
-                      />
+                  <Text as="h1" variant="headingLg">
+                    Welcome to Swift Address Autocomplete 🚀
+                  </Text>
+                  <Text as="p" variant="bodyMd" tone="subdued">
+                    Intelligent address autocomplete for your Shopify checkout, powered by Swiftcomplete API
+                  </Text>
                 </BlockStack>
+
+                <Box
+                  padding="400"
+                  background="bg-surface-secondary"
+                  borderRadius="200"
+                >
+                  <BlockStack gap="300">
+                    <Text as="h2" variant="headingMd">
+                      ✨ What This App Does
+                    </Text>
+                    <List>
+                      <List.Item>
+                        <strong>Real-time Address Suggestions:</strong> As customers type their address during checkout, they see instant autocomplete suggestions
+                      </List.Item>
+                      <List.Item>
+                        <strong>Checkout UI Extension:</strong> Seamlessly integrated into the native Shopify checkout experience
+                      </List.Item>
+                      <List.Item>
+                        <strong>Secure Backend Proxy:</strong> Your Swiftcomplete API key is never exposed to the frontend
+                      </List.Item>
+                      <List.Item>
+                        <strong>Usage Tracking:</strong> Every API call is tracked for billing purposes ($0.03 per lookup)
+                      </List.Item>
+                    </List>
+                  </BlockStack>
+                </Box>
+              </BlockStack>
             </Card>
           </Layout.Section>
+
+          {/* Screenshot Section */}
+          <Layout.Section>
+            <Card>
+              <BlockStack gap="400">
+                <Text as="h2" variant="headingMd">
+                  📸 How It Looks in Checkout
+                </Text>
+                <Text as="p" variant="bodyMd" tone="subdued">
+                  The address autocomplete appears directly in your checkout page:
+                </Text>
+                <Box
+                  borderRadius="200"
+                  borderWidth="025"
+                  borderColor="border"
+                  padding="0"
+                >
+                  <img
+                    src="https://i.ibb.co/nsL9xGc/checkout-screenshot.png"
+                    alt="Address Autocomplete in Checkout"
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      display: "block",
+                      borderRadius: "8px",
+                    }}
+                  />
+                </Box>
+              </BlockStack>
+            </Card>
+          </Layout.Section>
+
+          {/* How to Use Section */}
+          <Layout.Section>
+            <Card>
+              <BlockStack gap="400">
+                <Text as="h2" variant="headingMd">
+                  🎯 How to Use This App
+                </Text>
+                <BlockStack gap="300">
+                  <Box>
+                    <BlockStack gap="200">
+                      <Text as="h3" variant="headingSm">
+                        Step 1: Configure Your API Key
+                      </Text>
+                      <Text as="p" variant="bodyMd">
+                        Go to{" "}
+                        <Link url="/app/address-autocomplete" removeUnderline>
+                          Address Autocomplete Settings
+                        </Link>{" "}
+                        and enter your Swiftcomplete API key. Toggle "Enable Checkout pages" ON and save.
+                      </Text>
+                    </BlockStack>
+                  </Box>
+
+                  <Box>
+                    <BlockStack gap="200">
+                      <Text as="h3" variant="headingSm">
+                        Step 2: Preview the Extension
+                      </Text>
+                      <Text as="p" variant="bodyMd">
+                        Run <code>npm run dev</code> in your terminal. The CLI will open the Dev Console where you can preview the checkout extension.
+                      </Text>
+                    </BlockStack>
+                  </Box>
+
+                  <Box>
+                    <BlockStack gap="200">
+                      <Text as="h3" variant="headingSm">
+                        Step 3: Test the Autocomplete
+                      </Text>
+                      <Text as="p" variant="bodyMd">
+                        In the checkout preview, type an address (e.g., "123 Main"). After 300ms, you'll see autocomplete suggestions appear. Select one to populate the field.
+                      </Text>
+                    </BlockStack>
+                  </Box>
+
+                  <Box>
+                    <BlockStack gap="200">
+                      <Text as="h3" variant="headingSm">
+                        Step 4: Deploy (Optional)
+                      </Text>
+                      <Text as="p" variant="bodyMd">
+                        Run <code>npm run deploy</code> to deploy the extension. Then enable it in Settings → Checkout → Customize.
+                      </Text>
+                    </BlockStack>
+                  </Box>
+                </BlockStack>
+              </BlockStack>
+            </Card>
+          </Layout.Section>
+
+          {/* Technical Details */}
           <Layout.Section variant="oneThird">
             <BlockStack gap="500">
               <Card>
                 <BlockStack gap="200">
                   <Text as="h2" variant="headingMd">
-                    App template specs
+                    🧰 Tech Stack
                   </Text>
                   <BlockStack gap="200">
                     <InlineStack align="space-between">
                       <Text as="span" variant="bodyMd">
-                        Framework
+                        Backend
                       </Text>
                       <Link
                         url="https://remix.run"
@@ -250,69 +366,82 @@ export default function Index() {
                     </InlineStack>
                     <InlineStack align="space-between">
                       <Text as="span" variant="bodyMd">
-                        Interface
+                        Extension
                       </Text>
-                      <span>
-                        <Link
-                          url="https://polaris.shopify.com"
-                          target="_blank"
-                          removeUnderline
-                        >
-                          Polaris
-                        </Link>
-                        {", "}
-                        <Link
-                          url="https://shopify.dev/docs/apps/tools/app-bridge"
-                          target="_blank"
-                          removeUnderline
-                        >
-                          App Bridge
-                        </Link>
-                      </span>
+                      <Link
+                        url="https://shopify.dev/docs/api/checkout-ui-extensions"
+                        target="_blank"
+                        removeUnderline
+                      >
+                        UI Extensions
+                      </Link>
                     </InlineStack>
                     <InlineStack align="space-between">
                       <Text as="span" variant="bodyMd">
                         API
                       </Text>
                       <Link
-                        url="https://shopify.dev/docs/api/admin-graphql"
+                        url="https://swiftcomplete.com"
                         target="_blank"
                         removeUnderline
                       >
-                        GraphQL API
+                        Swiftcomplete
                       </Link>
                     </InlineStack>
                   </BlockStack>
                 </BlockStack>
               </Card>
+
               <Card>
                 <BlockStack gap="200">
                   <Text as="h2" variant="headingMd">
-                    Next steps
+                    📚 Documentation
                   </Text>
                   <List>
                     <List.Item>
-                      Build an{" "}
                       <Link
-                        url="https://shopify.dev/docs/apps/getting-started/build-app-example"
+                        url="https://github.com/yourusername/swift-address-autocomplete/blob/main/README.md"
                         target="_blank"
                         removeUnderline
                       >
-                        {" "}
-                        example app
-                      </Link>{" "}
-                      to get started
-                    </List.Item>
-                    <List.Item>
-                      Explore Shopify’s API with{" "}
-                      <Link
-                        url="https://shopify.dev/docs/apps/tools/graphiql-admin-api"
-                        target="_blank"
-                        removeUnderline
-                      >
-                        GraphiQL
+                        Setup Guide
                       </Link>
                     </List.Item>
+                    <List.Item>
+                      <Link
+                        url="https://github.com/yourusername/swift-address-autocomplete/blob/main/TESTING_GUIDE_CHECKOUT.md"
+                        target="_blank"
+                        removeUnderline
+                      >
+                        Testing Guide
+                      </Link>
+                    </List.Item>
+                    <List.Item>
+                      <Link
+                        url="/app/address-autocomplete"
+                        removeUnderline
+                      >
+                        Configure Settings
+                      </Link>
+                    </List.Item>
+                  </List>
+                </BlockStack>
+              </Card>
+
+              <Card>
+                <BlockStack gap="200">
+                  <Text as="h2" variant="headingMd">
+                    🎓 Key Features Demonstrated
+                  </Text>
+                  <List>
+                    <List.Item>Checkout UI Extension target</List.Item>
+                    <List.Item>React component rendering</List.Item>
+                    <List.Item>API integration (Swiftcomplete)</List.Item>
+                    <List.Item>Reactive UI with debouncing</List.Item>
+                    <List.Item>Keyboard navigation support</List.Item>
+                    <List.Item>Automatic URL injection</List.Item>
+                    <List.Item>Settings validation</List.Item>
+                    <List.Item>Usage tracking</List.Item>
                   </List>
                 </BlockStack>
               </Card>
