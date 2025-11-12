@@ -2,6 +2,8 @@
 
 A Shopify app that adds intelligent address autocomplete to Checkout using a Checkout UI Extension and a secure backend proxy to Swiftcomplete API.
 
+## Link demo: https://www.loom.com/share/c2042805eaf84519b01e436ed36f8a99
+
 ## 🎯 What's Included
 
 - ✅ **Checkout UI Extension** - Real-time address suggestions during checkout
